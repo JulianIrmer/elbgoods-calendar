@@ -7,7 +7,14 @@ const Entry = require('../schema/entrySchema');
  * If the entry is not valid a error message is added to the object
  */
 module.exports.validateEntry = async (data) => {
-    if (data.startDate > data.endDate) {
+    if (!validedateState(data.state)) {
+        return {
+            message: 'State not valid. Must be "requested", "booked" or "tentative"',
+            isValid: false
+        };
+    }
+
+    if (!validateDate(data.startDate, data.endDate)) {
         return {
             message: 'Start date is later than end date',
             isValid: false
@@ -47,3 +54,24 @@ module.exports.validateEntry = async (data) => {
         isValid: true
     };
 };
+
+/**
+ * Validates if the input state is correct.
+ * @params {String} state
+ * @return {Boolean}
+ */
+function validedateState(state) {
+    const possibleStates = ['requested', 'booked', 'tentative'];
+
+    return possibleStates.indexOf(state) > -1;
+}
+
+/**
+ * Validates if the input state is correct.
+ * @params {Date} startDate
+ * @params {Date} endDate
+ * @return {Boolean}
+ */
+function validateDate(startDate, endDate) {
+    return startDate < endDate;
+}
